@@ -40,6 +40,7 @@ _ = lambda text: text
 
 class SequenceFields(object):
     has_children = True
+    completion_method = 'aggregator'
 
     # NOTE: Position is 1-indexed.  This is silly, but there are now student
     # positions saved on prod, so it's not easy to fix.

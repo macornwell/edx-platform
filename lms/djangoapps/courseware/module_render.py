@@ -517,6 +517,7 @@ def get_module_system_for_user(
         if not completion_waffle.waffle().is_enabled(completion_waffle.ENABLE_COMPLETION_TRACKING):
             raise Http404
         else:
+            log.info("Completing block %s", block.location)
             BlockCompletion.objects.submit_completion(
                 user=user,
                 course_key=course_id,
@@ -554,6 +555,7 @@ def get_module_system_for_user(
             if requested_user_id != user.id:
                 log.warning("{} tried to submit a completion on behalf of {}".format(user, requested_user_id))
                 return
+            log.info("Updating completion for {} from legacy progress event.".format(block.location))
             BlockCompletion.objects.submit_completion(
                 user=user,
                 course_key=course_id,

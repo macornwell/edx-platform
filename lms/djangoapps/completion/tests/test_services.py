@@ -1,20 +1,25 @@
 """
 Tests of completion xblock runtime services
 """
+import ddt
 from django.test import TestCase
 from opaque_keys.edx.keys import CourseKey, UsageKey
 from student.tests.factories import UserFactory
 
 from ..models import BlockCompletion
 from ..services import CompletionService
+from ..test_utils import CompletionWaffleTestMixin
 
 
-class CompletionServiceTestCase(TestCase):
+@ddt.ddt
+class CompletionServiceTestCase(CompletionWaffleTestMixin, TestCase):
     """
     Test the data returned by the CompletionService.
     """
 
     def setUp(self):
+        super(CompletionServiceTestCase, self).setUp()
+        self.override_waffle_switch(True)
         self.user = UserFactory.create()
         self.other_user = UserFactory.create()
         self.course_key = CourseKey.from_string("edX/MOOC101/2049_T2")
@@ -62,3 +67,8 @@ class CompletionServiceTestCase(TestCase):
                 self.block_keys[4]: 0.0,
             },
         )
+
+    @ddt.data(True, False)
+    def test_enabled_honors_waffle_switch(self, enabled):
+        self.override_waffle_switch(enabled)
+        self.assertEqual(self.completion_service.completion_tracking_enabled(), enabled)

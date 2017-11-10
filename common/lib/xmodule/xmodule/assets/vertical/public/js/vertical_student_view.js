@@ -1,10 +1,12 @@
 /* JavaScript for Vertical Student View. */
 
+/* global Set:false */  // false means do not assign to Set
 
 // Using a global variable for SEEN_COMPLETABLES because this needs to track
 // completables between separate loads of the same vertical (when a learner
 // goes from one tab to the next, and then navigates back within a given
 // sequential).
+
 var SEEN_COMPLETABLES = new Set();
 
 window.VerticalStudentView = function(runtime, element) {

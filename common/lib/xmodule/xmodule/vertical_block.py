@@ -10,6 +10,7 @@ import logging
 from lxml import etree
 from opaque_keys.edx.keys import UsageKey
 import six
+from xblock.completable import XBlockCompletionMode
 from xblock.core import XBlock
 from xblock.exceptions import JsonHandlerError
 from xblock.fragment import Fragment
@@ -37,7 +38,7 @@ def is_completable_by_viewing(block):
     This is true of any non-customized, non-scorable, completable block.
     """
     return (
-        getattr(block, 'completion_method', 'completable') == 'completable'
+        getattr(block, 'completion_mode', XBlockCompletionMode.COMPLETABLE) == XBlockCompletionMode.COMPLETABLE
         and not getattr(block, 'has_custom_completion', False)
         and not block.has_score
     )

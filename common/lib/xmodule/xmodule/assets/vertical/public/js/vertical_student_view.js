@@ -1,4 +1,7 @@
 /* JavaScript for Vertical Student View. */
+
+var SEEN_COMPLETABLES;
+
 window.VerticalStudentView = function(runtime, element) {
     'use strict';
     RequireJS.require(['course_bookmarks/js/views/bookmark_button'], function(BookmarkButton) {
@@ -13,6 +16,9 @@ window.VerticalStudentView = function(runtime, element) {
             apiUrl: $bookmarkButtonElement.data('bookmarksApiUrl')
         });
     });
+    if SEEN_COMPLETABLES === undefined {
+	SEEN_COMPLETABLES = [];
+    }
     $(element).find('.vert').each(
         function(idx, block) {
             var blockKey = block.dataset.id;
@@ -20,7 +26,7 @@ window.VerticalStudentView = function(runtime, element) {
             if (block.dataset.completableByViewing === undefined) {
                 return;
             }
-            if (blockKey) {
+            if (blockKey and blockKey not in SEEN_COMPLETABLES) {
                 $.ajax({
                     type: 'POST',
                     url: runtime.handlerUrl(element, 'publish_completion'),
@@ -29,6 +35,7 @@ window.VerticalStudentView = function(runtime, element) {
                         completion: 1.0
                     })
                 });
+                SEEN_COMPLETABLES.push(blockKey);
             }
         }
     );

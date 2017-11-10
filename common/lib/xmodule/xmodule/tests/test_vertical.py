@@ -120,7 +120,11 @@ class VerticalBlockTestCase(BaseVerticalBlockTest):
     @staticmethod
     def _render_completable_blocks(template, context):
         """
-        A custom template rendering function
+        A custom template rendering function that displays the
+        watched_completable_blocks of the template.
+
+        This is used because the default test renderer is haphazardly
+        formatted, and is difficult to make assertions about.
         """
         return u'|'.join(context['watched_completable_blocks'])
 
@@ -131,6 +135,11 @@ class VerticalBlockTestCase(BaseVerticalBlockTest):
         (True, 1.0, 'assertNotIn'),
     )
     def test_completion_data_attrs(self, completion_enabled, completion_value, assertion_method):
+        """
+        Test that data-completable-by-viewing attributes are included only when
+        the completion service is enabled, and only for blocks with a
+        completion value less than 1.0.
+        """
         with patch.object(self.module_system, 'render_template', new=self._render_completable_blocks):
             self.module_system._services['completion'] = StubCompletionService(
                 enabled=completion_enabled,

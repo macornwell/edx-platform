@@ -1,6 +1,6 @@
 /* JavaScript for Vertical Student View. */
 
-var SEEN_COMPLETABLES;
+var SEEN_COMPLETABLES = new Set();
 
 window.VerticalStudentView = function(runtime, element) {
     'use strict';
@@ -16,9 +16,6 @@ window.VerticalStudentView = function(runtime, element) {
             apiUrl: $bookmarkButtonElement.data('bookmarksApiUrl')
         });
     });
-    if SEEN_COMPLETABLES === undefined {
-	SEEN_COMPLETABLES = [];
-    }
     $(element).find('.vert').each(
         function(idx, block) {
             var blockKey = block.dataset.id;
@@ -26,7 +23,7 @@ window.VerticalStudentView = function(runtime, element) {
             if (block.dataset.completableByViewing === undefined) {
                 return;
             }
-            if (blockKey and blockKey not in SEEN_COMPLETABLES) {
+            if (blockKey && !SEEN_COMPLETABLES.has(blockKey)) {
                 $.ajax({
                     type: 'POST',
                     url: runtime.handlerUrl(element, 'publish_completion'),
@@ -35,7 +32,7 @@ window.VerticalStudentView = function(runtime, element) {
                         completion: 1.0
                     })
                 });
-                SEEN_COMPLETABLES.push(blockKey);
+                SEEN_COMPLETABLES.add(blockKey);
             }
         }
     );

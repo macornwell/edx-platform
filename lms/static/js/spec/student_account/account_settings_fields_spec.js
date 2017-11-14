@@ -9,9 +9,10 @@ define(['backbone',
     'js/spec/student_account/account_settings_fields_helpers',
     'js/student_account/views/account_settings_fields',
     'js/student_account/models/user_account_model',
-    'string_utils'],
+    'string_utils',
+    'common/js/components/utils/view_utils'],
     function(Backbone, $, _, AjaxHelpers, TemplateHelpers, UserAccountModel, FieldViews, FieldViewsSpecHelpers,
-              AccountSettingsFieldViewSpecHelpers, AccountSettingsFieldViews) {
+              AccountSettingsFieldViewSpecHelpers, AccountSettingsFieldViews, ViewUtils) {
         'use strict';
 
         describe('edx.AccountSettingsFieldViews', function() {
@@ -121,7 +122,7 @@ define(['backbone',
             });
 
             it('sends request to /i18n/setlang/ after changing language in LanguagePreferenceFieldView', function() {
-                requests = AjaxHelpers.requests(this);
+                var reloadSpy = spyOn(ViewUtils, 'reload');
 
                 var selector = '.u-field-value > select';
                 var fieldData = FieldViewsSpecHelpers.createFieldData(AccountSettingsFieldViews.DropdownFieldView, {
@@ -131,6 +132,8 @@ define(['backbone',
                 });
 
                 var view = new AccountSettingsFieldViews.LanguagePreferenceFieldView(fieldData).render();
+
+                requests = AjaxHelpers.requests(this);
 
                 data = {language: FieldViewsSpecHelpers.SELECT_OPTIONS[2][0]};
                 view.$(selector).val(data[fieldData.valueAttribute]).change();
@@ -146,6 +149,9 @@ define(['backbone',
                 );
                 AjaxHelpers.respondWithNoContent(requests);
                 FieldViewsSpecHelpers.expectMessageContains(view, 'Your changes have been saved.');
+
+                // confirm that a page reload was attempted
+                expect(reloadSpy.calls.count()).toEqual(1);
 
                 data = {language: FieldViewsSpecHelpers.SELECT_OPTIONS[1][0]};
                 view.$(selector).val(data[fieldData.valueAttribute]).change();
@@ -164,6 +170,9 @@ define(['backbone',
                     view,
                     'You must sign out and sign back in before your language changes take effect.'
                 );
+
+                // confirm that a page reload was *not* attempted (call count was 1 before this)
+                expect(reloadSpy.calls.count()).toEqual(1);
             });
 
             it('reads and saves the value correctly for LanguageProficienciesFieldView', function() {

@@ -13,7 +13,8 @@
         'text!templates/fields/field_social_link_account.underscore',
         'text!templates/fields/field_order_history.underscore',
         'edx-ui-toolkit/js/utils/string-utils',
-        'edx-ui-toolkit/js/utils/html-utils'
+        'edx-ui-toolkit/js/utils/html-utils',
+        'common/js/components/utils/view_utils'
     ], function(
         gettext, $, _, Backbone,
         FieldViews,
@@ -24,7 +25,8 @@
         field_social_link_template,
         field_order_history_template,
         StringUtils,
-        HtmlUtils
+        HtmlUtils,
+        ViewUtils
     ) {
         var AccountSettingsFieldViews = {
             ReadonlyFieldView: FieldViews.ReadonlyFieldView.extend({
@@ -61,8 +63,17 @@
                         url: '/i18n/setlang/',
                         data: data,
                         dataType: 'html',
-                        success: function() {
+                        success: function(result, textStatus, xhr) {
                             view.showSuccessMessage();
+                            // TODO: Remove Django 1.11 upgrade shim
+                            // SHIM: This condition will always be true after upgrading to 1.10+, which will return
+                            // http 204 instead of 302, so the code block can be moved outside of the conditional.
+                            // A 302 redirect would cause the browser to transparently handle the redirect, making the
+                            // settings page appear to change language.  We probably want to preserve this behavior, so
+                            // we manually force the reload.
+                            if (xhr.status !== 302) {
+                                ViewUtils.reload();
+                            }
                         },
                         error: function() {
                             view.showNotificationMessage(

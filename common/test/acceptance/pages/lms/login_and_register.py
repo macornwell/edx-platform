@@ -208,7 +208,7 @@ class CombinedLoginAndRegisterPage(PageObject):
 
         """
         # Fill in the form
-        self.wait_for_element_visibility('#register-email', 'Email field is shown')
+        self.wait_for_element_visibility('#register-honor_code', 'Honor code field is shown')
         if email:
             self.q(css="#register-email").fill(email)
         if full_name:

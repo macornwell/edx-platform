@@ -223,6 +223,7 @@ class CombinedLoginAndRegisterPage(PageObject):
             self.q(css="#register-favorite_movie").fill(favorite_movie)
         if terms_of_service:
             self.q(css="label[for='register-honor_code']").click()
+            Promise(lambda: self.q(css='#register-honor_code:checked'), 'Honor code field is checked').fulfill()
 
         # Submit it
         self.q(css=".register-button").click()

@@ -229,7 +229,7 @@
                     FormView.prototype.postRender.call(this);
                     $('.optional-fields').hide();
                     $('#toggle_optional_fields').change(function() {
-                        analytics.track('edx.bi.user.register.optional_fields_selected');
+                        window.analytics.track('edx.bi.user.register.optional_fields_selected');
                         $('.optional-fields').toggle(300);
                     });
 
